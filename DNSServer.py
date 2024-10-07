@@ -18,7 +18,15 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
-import dns
+import dns.message
+import dns.rdataclass
+import dns.rdatatype
+
+import socket
+import threading
+
+from cryptography.fernet import Fernet
+
 
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
@@ -45,8 +53,8 @@ def decrypt_with_aes(encrypted_data, password, salt):
     return decrypted_data.decode('utf-8')
 
 salt = b"Tandon" # Remember it should be a byte-object
-password = b"cjt9861@nyu.edu"
-input_string = b"AlwaysWatching"
+password = "cjt9861@nyu.edu"
+input_string = "AlwaysWatching"
 
 encrypted_value = encrypt_with_aes(input_string, password, salt) # exfil function
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
@@ -110,7 +118,7 @@ def run_dns_server():
             # Wait for incoming DNS requests
             data, addr = server_socket.recvfrom(1024)
             # Parse the request using the `dns.message.from_wire` method
-            request = dns.message.from_text(data)
+            request = dns.message.from_wire(data)
             # Create a response message using the `dns.message.make_response` method
             response = dns.message.make_response(request)
 
