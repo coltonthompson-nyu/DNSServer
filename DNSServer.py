@@ -1,3 +1,5 @@
+
+
 import dns.message
 import dns.rdatatype
 import dns.rdataclass
@@ -84,23 +86,23 @@ dns_records = {
             86400, #minimum
         ),
     },
-    'safebank.com': {
+    'safebank.com.': {
         dns.rdatatype.A: '192.168.1.102',
     },
-    'google.com': {
+    'google.com.': {
         dns.rdatatype.A: '192.168.1.103',
     },
-    'legitsite.com': {
+    'legitsite.com.': {
         dns.rdatatype.A: '192.168.1.104',
     },
-    'yahoo.com': {
+    'yahoo.com.': {
         dns.rdatatype.A: '192.168.1.105',
     },
-    'nyu.edu': {
+    'nyu.edu.': {
         dns.rdatatype.A: '192.168.1.106',
-        dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
+        dns.rdatatype.TXT: str(encrypted_value),
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
-        dns.rdatatype.TXT: ('a string cast version of your encrypted secret data from step 3'),
+        dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
         dns.rdatatype.NS: 'ns1.nyu.edu.'
     }
 
@@ -111,7 +113,7 @@ dns_records = {
 def run_dns_server():
     # Create a UDP socket and bind it to the local IP address (what unique IP address is used here, similar to webserver lab) and port (the standard port for DNS)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Research this
-    server_socket.bind(('localhost', 53)) #53 is dns port num
+    server_socket.bind(('127.0.0.1', 53)) #53 is dns port num
 
     while True:
         try:
@@ -125,7 +127,10 @@ def run_dns_server():
             # Get the question from the request
             question = request.question[0]
             qname = question.name.to_text()
+            #print("qname: " + str(qname))
             qtype = question.rdtype
+            #print("qtype: " + str(qtype))
+
 
             # Check if there is a record in the `dns_records` dictionary that matches the question
             if qname in dns_records and qtype in dns_records[qname]:
